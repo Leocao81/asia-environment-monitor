@@ -1,0 +1,65 @@
+name: Daily Update
+
+on:
+  schedule:
+    # 02:00 UTC every day. Equivalent to 10:00 Beijing time.
+    - cron: '0 2 * * *'
+  workflow_dispatch:
+    # Allow manual triggering from GitHub UI for testing.
+  push:
+    paths:
+      - 'scripts/**'
+      - 'data/snapshot.json'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: daily-update
+  cancel-in-progress: false
+
+jobs:
+  scrape-and-commit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci || npm install
+
+      - name: Run policy scraper
+        env:
+          POLICY_SOURCES: ${{ vars.POLICY_SOURCES }}
+        run: npm run scrape:policies
+
+      - name: Run trade scraper
+        env:
+          COMTRADE_API_URL: ${{ secrets.COMTRADE_API_URL }}
+          COMTRADE_API_KEY: ${{ secrets.COMTRADE_API_KEY }}
+        run: npm run scrape:trade
+
+      - name: Sanity-check snapshot
+        run: |
+          node -e "const s=require('./data/snapshot.json'); if(!Array.isArray(s.policies)) throw new Error('bad policies'); if(!Array.isArray(s.trade)) throw new Error('bad trade'); console.log('policies='+s.policies.length+' trade='+s.trade.length);"
+
+      - name: Commit & push data update
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/snapshot.json data/history/ || true
+          if git diff --cached --quiet; then
+            echo "No data changes — skipping push."
+            exit 0
+          fi
+          git commit -m "chore(data): daily snapshot $(date -u +'%Y-%m-%d')"
+          git push
