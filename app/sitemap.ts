@@ -1,8 +1,9 @@
 import type { MetadataRoute } from 'next';
 import { COUNTRIES, REGIONS } from '@/lib/countries';
+import { getSiteUrl } from '@/lib/site';
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const base = process.env.SITE_URL ?? 'https://example.com';
+  const base = getSiteUrl();
   const now = new Date();
   return [
     { url: `${base}/`, lastModified: now, changeFrequency: 'daily', priority: 1 },

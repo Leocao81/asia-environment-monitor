@@ -2,9 +2,10 @@ import type { Metadata } from 'next';
 import './globals.css';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
+import { getSiteUrl } from '@/lib/site';
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.SITE_URL ?? 'https://example.com'),
+  metadataBase: new URL(getSiteUrl()),
   title: {
     default: '亚洲环境监测台 | Asia Environment Monitor',
     template: '%s · 亚洲环境监测台',
