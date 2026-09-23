@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { COUNTRIES, getCountry, getRegion } from '@/lib/countries';
 import { readSnapshot, policiesForCountry, tradeForCountry } from '@/lib/data';
 import { PolicyList } from '@/components/PolicyList';
-import { TradeTable } from '@/components/TradeTable';
+import { TradeExplorer } from '@/components/TradeExplorer';
 import { LastUpdated } from '@/components/LastUpdated';
 import { StatCard } from '@/components/StatCard';
 import { formatUSD } from '@/lib/format';
@@ -95,8 +95,12 @@ export default function CountryPage({ params }: { params: { code: string } }) {
       </section>
 
       <section className="container-page">
-        <h2 className="mb-3 text-lg font-semibold">监测设备进出口记录</h2>
-        <TradeTable records={trade} emptyText="该国暂未抓到贸易数据" />
+        <TradeExplorer
+          records={trade}
+          showRegionFilter={false}
+          showCountryFilter={false}
+          heading={`${country.name.zh}监测设备进出口记录`}
+        />
       </section>
     </div>
   );

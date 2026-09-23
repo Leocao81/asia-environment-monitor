@@ -144,21 +144,135 @@ const POLICY_TEMPLATES = {
   },
 };
 
+// ---------------------------------------------------------------------------
+// Trade reference data
+// ---------------------------------------------------------------------------
+
+/** Products with HS codes, product category and the site types they serve. */
 const PRODUCTS = [
-  { cat: 'air-monitor',     hs: '9027.20', zh: '大气污染物在线监测仪',         en: 'Continuous ambient air pollutant monitor' },
-  { cat: 'air-monitor',     hs: '9027.30', zh: '烟气在线监测系统 (CEMS)',      en: 'Continuous emission monitoring system (CEMS)' },
-  { cat: 'water-monitor',   hs: '9027.80', zh: '水质在线分析仪 (COD/氨氮/总磷)', en: 'Online water-quality analyzer (COD/NH3-N/TP)' },
-  { cat: 'water-monitor',   hs: '9027.80', zh: '重金属在线监测仪',               en: 'Online heavy-metal water monitor' },
-  { cat: 'soil-monitor',    hs: '9027.80', zh: '土壤重金属检测仪',               en: 'Soil heavy-metal detector' },
-  { cat: 'noise-monitor',   hs: '9027.80', zh: '噪声自动监测仪',                 en: 'Automatic noise monitor' },
-  { cat: 'lab-equipment',   hs: '9027.20', zh: '气相色谱-质谱联用仪 (GC-MS)',    en: 'Gas chromatograph–mass spectrometer (GC-MS)' },
-  { cat: 'emissions-control', hs: '8421.39', zh: '工业除尘设备',                  en: 'Industrial dust collector' },
-  { cat: 'emissions-control', hs: '8421.99', zh: '脱硫脱硝装置',                  en: 'Flue-gas desulfurization & denitrification unit' },
-  { cat: 'waste-treatment', hs: '8479.89', zh: '危废处置成套设备',               en: 'Hazardous-waste treatment equipment' },
-  { cat: 'waste-treatment', hs: '8479.89', zh: '污水处理一体化装置',             en: 'Integrated wastewater treatment unit' },
+  { cat: 'air-monitor',       hs: '9027.10', zh: '环境空气气态污染物分析仪',     en: 'Ambient air gaseous pollutant analyzer',      sites: ['urban-air-station', 'industrial-park'] },
+  { cat: 'air-monitor',       hs: '9027.20', zh: 'PM2.5/PM10 颗粒物监测仪',      en: 'PM2.5 / PM10 particulate monitor',            sites: ['urban-air-station', 'port-customs'] },
+  { cat: 'air-monitor',       hs: '9027.30', zh: '烟气连续排放监测系统 (CEMS)',   en: 'Continuous emission monitoring system (CEMS)', sites: ['industrial-park'] },
+  { cat: 'air-monitor',       hs: '9027.10', zh: 'VOCs 在线监测系统',             en: 'Online VOC monitoring system',                sites: ['industrial-park', 'urban-air-station'] },
+  { cat: 'water-monitor',     hs: '9027.80', zh: '水质 COD/氨氮在线分析仪',       en: 'Online COD / ammonia analyzer',               sites: ['watershed-section', 'industrial-park'] },
+  { cat: 'water-monitor',     hs: '9027.80', zh: '水质重金属在线监测仪',           en: 'Online heavy-metal water monitor',            sites: ['watershed-section', 'drinking-water-source'] },
+  { cat: 'water-monitor',     hs: '9027.80', zh: '多参数水质监测浮标',             en: 'Multi-parameter water quality buoy',          sites: ['watershed-section', 'drinking-water-source'] },
+  { cat: 'water-monitor',     hs: '9027.80', zh: '总磷总氮在线分析仪',             en: 'Online total-P / total-N analyzer',           sites: ['watershed-section'] },
+  { cat: 'soil-monitor',      hs: '9027.80', zh: '土壤重金属检测仪',               en: 'Soil heavy-metal detector',                   sites: ['soil-site'] },
+  { cat: 'soil-monitor',      hs: '9027.80', zh: '土壤墒情与盐分监测系统',         en: 'Soil moisture & salinity monitoring system',  sites: ['soil-site'] },
+  { cat: 'noise-monitor',     hs: '9027.80', zh: '环境噪声自动监测仪',             en: 'Automatic ambient noise monitor',             sites: ['noise-site'] },
+  { cat: 'noise-monitor',     hs: '9027.80', zh: '交通噪声在线监测终端',           en: 'Traffic noise monitoring terminal',           sites: ['noise-site', 'port-customs'] },
+  { cat: 'lab-equipment',     hs: '9027.20', zh: '气相色谱-质谱联用仪 (GC-MS)',    en: 'Gas chromatograph–mass spectrometer (GC-MS)', sites: ['laboratory'] },
+  { cat: 'lab-equipment',     hs: '9027.10', zh: '电感耦合等离子体质谱仪 (ICP-MS)', en: 'ICP-MS spectrometer',                        sites: ['laboratory'] },
+  { cat: 'lab-equipment',     hs: '9027.30', zh: '紫外可见分光光度计',             en: 'UV-Vis spectrophotometer',                    sites: ['laboratory'] },
+  { cat: 'emissions-control', hs: '8421.39', zh: '工业烟气除尘设备',               en: 'Industrial flue-gas dust collector',          sites: ['industrial-park'] },
+  { cat: 'emissions-control', hs: '8421.99', zh: '脱硫脱硝成套装置',               en: 'Flue-gas desulfurization & denitrification unit', sites: ['industrial-park'] },
+  { cat: 'emissions-control', hs: '8414.59', zh: '工业废气收集与风机系统',         en: 'Industrial waste-gas collection & blower system', sites: ['industrial-park'] },
+  { cat: 'emissions-control', hs: '8421.39', zh: '机动车尾气遥感检测设备',         en: 'Vehicle exhaust remote-sensing device',       sites: ['vehicle-emission'] },
+  { cat: 'waste-treatment',   hs: '8479.89', zh: '危险废物处置成套设备',           en: 'Hazardous-waste treatment equipment',         sites: ['industrial-park'] },
+  { cat: 'waste-treatment',   hs: '8479.89', zh: '一体化污水处理装置',             en: 'Integrated wastewater treatment unit',        sites: ['industrial-park', 'watershed-section'] },
+  { cat: 'waste-treatment',   hs: '8419.89', zh: '医疗废物高温蒸煮设备',           en: 'Medical-waste autoclave system',              sites: ['laboratory', 'industrial-park'] },
 ];
 
-const PARTNERS = ['CN', 'DE', 'JP', 'US', 'KR', 'SG', 'GB', 'FR', 'IT', 'NL', 'IN', 'AE'];
+/** Trade partners with localized names (ISO 3166-1 alpha-2). */
+const PARTNERS = [
+  { iso2: 'CN', name: { zh: '中国',       en: 'China' } },
+  { iso2: 'DE', name: { zh: '德国',       en: 'Germany' } },
+  { iso2: 'JP', name: { zh: '日本',       en: 'Japan' } },
+  { iso2: 'US', name: { zh: '美国',       en: 'United States' } },
+  { iso2: 'KR', name: { zh: '韩国',       en: 'South Korea' } },
+  { iso2: 'SG', name: { zh: '新加坡',     en: 'Singapore' } },
+  { iso2: 'GB', name: { zh: '英国',       en: 'United Kingdom' } },
+  { iso2: 'FR', name: { zh: '法国',       en: 'France' } },
+  { iso2: 'IT', name: { zh: '意大利',     en: 'Italy' } },
+  { iso2: 'NL', name: { zh: '荷兰',       en: 'Netherlands' } },
+  { iso2: 'CH', name: { zh: '瑞士',       en: 'Switzerland' } },
+  { iso2: 'SE', name: { zh: '瑞典',       en: 'Sweden' } },
+  { iso2: 'FI', name: { zh: '芬兰',       en: 'Finland' } },
+  { iso2: 'DK', name: { zh: '丹麦',       en: 'Denmark' } },
+  { iso2: 'PL', name: { zh: '波兰',       en: 'Poland' } },
+  { iso2: 'CZ', name: { zh: '捷克',       en: 'Czechia' } },
+  { iso2: 'AT', name: { zh: '奥地利',     en: 'Austria' } },
+  { iso2: 'ES', name: { zh: '西班牙',     en: 'Spain' } },
+  { iso2: 'IN', name: { zh: '印度',       en: 'India' } },
+  { iso2: 'TR', name: { zh: '土耳其',     en: 'Türkiye' } },
+  { iso2: 'RU', name: { zh: '俄罗斯',     en: 'Russia' } },
+  { iso2: 'AE', name: { zh: '阿联酋',     en: 'United Arab Emirates' } },
+  { iso2: 'MY', name: { zh: '马来西亚',   en: 'Malaysia' } },
+  { iso2: 'TH', name: { zh: '泰国',       en: 'Thailand' } },
+  { iso2: 'VN', name: { zh: '越南',       en: 'Vietnam' } },
+  { iso2: 'CA', name: { zh: '加拿大',     en: 'Canada' } },
+  { iso2: 'AU', name: { zh: '澳大利亚',   en: 'Australia' } },
+  { iso2: 'IL', name: { zh: '以色列',     en: 'Israel' } },
+  { iso2: 'SA', name: { zh: '沙特阿拉伯', en: 'Saudi Arabia' } },
+];
+
+/** Cities + customs districts per country, used to build realistic 点位 names. */
+const GEO = {
+  KZ: { cities: [['阿拉木图', 'Almaty'], ['阿斯塔纳', 'Astana'], ['奇姆肯特', 'Shymkent']], ports: [['霍尔果斯口岸', 'Khorgos Port'], ['阿拉木图关区', 'Almaty Customs']] },
+  UZ: { cities: [['塔什干', 'Tashkent'], ['撒马尔罕', 'Samarkand'], ['布哈拉', 'Bukhara']], ports: [['塔什干关区', 'Tashkent Customs']] },
+  KG: { cities: [['比什凯克', 'Bishkek'], ['奥什', 'Osh']], ports: [['比什凯克关区', 'Bishkek Customs']] },
+  TJ: { cities: [['杜尚别', 'Dushanbe'], ['苦盏', 'Khujand']], ports: [['杜尚别关区', 'Dushanbe Customs']] },
+  TM: { cities: [['阿什哈巴德', 'Ashgabat'], ['土库曼纳巴德', 'Turkmenabat']], ports: [['阿什哈巴德关区', 'Ashgabat Customs']] },
+
+  ID: { cities: [['雅加达', 'Jakarta'], ['泗水', 'Surabaya'], ['万隆', 'Bandung'], ['棉兰', 'Medan']], ports: [['丹戎不碌港', 'Tanjung Priok Port'], ['泗水港', 'Tanjung Perak Port']] },
+  TH: { cities: [['曼谷', 'Bangkok'], ['清迈', 'Chiang Mai'], ['罗勇', 'Rayong']], ports: [['林查班港', 'Laem Chabang Port'], ['曼谷关区', 'Bangkok Customs']] },
+  VN: { cities: [['河内', 'Hanoi'], ['胡志明市', 'Ho Chi Minh City'], ['岘港', 'Da Nang']], ports: [['海防港', 'Hai Phong Port'], ['盖梅港', 'Cai Mep Port']] },
+  MY: { cities: [['吉隆坡', 'Kuala Lumpur'], ['槟城', 'Penang'], ['柔佛', 'Johor']], ports: [['巴生港', 'Port Klang'], ['槟城港', 'Penang Port']] },
+  PH: { cities: [['马尼拉', 'Manila'], ['宿务', 'Cebu'], ['达沃', 'Davao']], ports: [['马尼拉港', 'Port of Manila'], ['苏比克湾', 'Subic Bay']] },
+  SG: { cities: [['新加坡', 'Singapore'], ['裕廊', 'Jurong']], ports: [['新加坡港', 'Port of Singapore']] },
+  MM: { cities: [['仰光', 'Yangon'], ['曼德勒', 'Mandalay']], ports: [['仰光港', 'Yangon Port']] },
+  KH: { cities: [['金边', 'Phnom Penh'], ['西哈努克', 'Sihanoukville']], ports: [['西哈努克港', 'Sihanoukville Port']] },
+  LA: { cities: [['万象', 'Vientiane'], ['琅勃拉邦', 'Luang Prabang']], ports: [['万象关区', 'Vientiane Customs']] },
+  BN: { cities: [['斯里巴加湾', 'Bandar Seri Begawan']], ports: [['穆阿拉港', 'Muara Port']] },
+  TL: { cities: [['帝力', 'Dili']], ports: [['帝力港', 'Port of Dili']] },
+
+  IN: { cities: [['新德里', 'New Delhi'], ['孟买', 'Mumbai'], ['钦奈', 'Chennai'], ['班加罗尔', 'Bengaluru']], ports: [['那瓦舍瓦港', 'Nhava Sheva Port'], ['金奈港', 'Chennai Port']] },
+  PK: { cities: [['卡拉奇', 'Karachi'], ['拉合尔', 'Lahore'], ['伊斯兰堡', 'Islamabad']], ports: [['卡拉奇港', 'Port of Karachi'], ['卡西姆港', 'Port Qasim']] },
+  BD: { cities: [['达卡', 'Dhaka'], ['吉大港', 'Chattogram']], ports: [['吉大港', 'Chattogram Port']] },
+  LK: { cities: [['科伦坡', 'Colombo'], ['康提', 'Kandy']], ports: [['科伦坡港', 'Port of Colombo']] },
+  NP: { cities: [['加德满都', 'Kathmandu'], ['博卡拉', 'Pokhara']], ports: [['加德满都关区', 'Kathmandu Customs']] },
+  BT: { cities: [['廷布', 'Thimphu']], ports: [['廷布关区', 'Thimphu Customs']] },
+  MV: { cities: [['马累', 'Malé']], ports: [['马累港', 'Port of Malé']] },
+  AF: { cities: [['喀布尔', 'Kabul'], ['坎大哈', 'Kandahar']], ports: [['喀布尔关区', 'Kabul Customs']] },
+
+  SA: { cities: [['利雅得', 'Riyadh'], ['吉达', 'Jeddah'], ['达曼', 'Dammam']], ports: [['吉达伊斯兰港', 'Jeddah Islamic Port'], ['达曼港', 'King Abdulaziz Port']] },
+  AE: { cities: [['迪拜', 'Dubai'], ['阿布扎比', 'Abu Dhabi'], ['沙迦', 'Sharjah']], ports: [['杰贝阿里港', 'Jebel Ali Port'], ['哈利法港', 'Khalifa Port']] },
+  IR: { cities: [['德黑兰', 'Tehran'], ['伊斯法罕', 'Isfahan'], ['阿巴斯港', 'Bandar Abbas']], ports: [['阿巴斯港', 'Shahid Rajaee Port']] },
+  IQ: { cities: [['巴格达', 'Baghdad'], ['巴士拉', 'Basra']], ports: [['乌姆盖斯尔港', 'Umm Qasr Port']] },
+  IL: { cities: [['特拉维夫', 'Tel Aviv'], ['海法', 'Haifa']], ports: [['海法港', 'Port of Haifa'], ['阿什杜德港', 'Ashdod Port']] },
+  JO: { cities: [['安曼', 'Amman'], ['亚喀巴', 'Aqaba']], ports: [['亚喀巴港', 'Port of Aqaba']] },
+  LB: { cities: [['贝鲁特', 'Beirut']], ports: [['贝鲁特港', 'Port of Beirut']] },
+  SY: { cities: [['大马士革', 'Damascus'], ['阿勒颇', 'Aleppo']], ports: [['拉塔基亚港', 'Latakia Port']] },
+  KW: { cities: [['科威特城', 'Kuwait City']], ports: [['舒瓦伊赫港', 'Shuwaikh Port']] },
+  BH: { cities: [['麦纳麦', 'Manama']], ports: [['哈利法本萨勒曼港', 'Khalifa Bin Salman Port']] },
+  QA: { cities: [['多哈', 'Doha']], ports: [['哈马德港', 'Hamad Port']] },
+  OM: { cities: [['马斯喀特', 'Muscat'], ['塞拉莱', 'Salalah']], ports: [['塞拉莱港', 'Port of Salalah'], ['苏哈尔港', 'Sohar Port']] },
+  YE: { cities: [['萨那', 'Sanaa'], ['亚丁', 'Aden']], ports: [['亚丁港', 'Port of Aden']] },
+  TR: { cities: [['伊斯坦布尔', 'Istanbul'], ['安卡拉', 'Ankara'], ['伊兹密尔', 'Izmir']], ports: [['安巴利港', 'Ambarli Port'], ['梅尔辛港', 'Mersin Port']] },
+  CY: { cities: [['尼科西亚', 'Nicosia'], ['利马索尔', 'Limassol']], ports: [['利马索尔港', 'Port of Limassol']] },
+};
+
+const SITE_NAME_SUFFIX = {
+  'urban-air-station':     { zh: '环境空气自动监测站', en: 'Air Quality Monitoring Station' },
+  'industrial-park':       { zh: '工业园区监测点',     en: 'Industrial Park Monitoring Point' },
+  'watershed-section':     { zh: '流域断面监测站',     en: 'Watershed Section Station' },
+  'drinking-water-source': { zh: '饮用水水源地监测点', en: 'Drinking Water Source Point' },
+  'soil-site':             { zh: '土壤环境监测点',     en: 'Soil Monitoring Site' },
+  'noise-site':            { zh: '声环境功能区监测点', en: 'Noise Functional Area Point' },
+  'port-customs':          { zh: '港区环境监测点',     en: 'Port Area Monitoring Point' },
+  'vehicle-emission':      { zh: '机动车尾气检测站',   en: 'Vehicle Emission Testing Station' },
+  laboratory:              { zh: '环境检测实验室',     en: 'Environmental Testing Laboratory' },
+};
+
+// ---------------------------------------------------------------------------
+// Generators
+// ---------------------------------------------------------------------------
+
+/**
+ * How many months of trade history to generate (including the current month).
+ */
+const TRADE_MONTHS = 6;
 
 export function buildSeedPolicies() {
   const out = [];
@@ -193,36 +307,64 @@ export function buildSeedPolicies() {
   return out;
 }
 
+function monthString(offset) {
+  const d = new Date();
+  d.setUTCDate(1); // avoid month-end overflow
+  d.setUTCMonth(d.getUTCMonth() - offset);
+  return `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, '0')}`;
+}
+
 export function buildSeedTrade() {
   const out = [];
   const rng = srandom('trade-' + TODAY);
-  const period = new Date();
-  period.setUTCMonth(period.getUTCMonth() - 1);
-  const periodStr = `${period.getUTCFullYear()}-${String(period.getUTCMonth() + 1).padStart(2, '0')}`;
+
   for (const c of COUNTRIES) {
-    const n = 4 + Math.floor(rng() * 5); // 4-8 per country per month
-    for (let i = 0; i < n; i++) {
-      const p = pickRandom(PRODUCTS, rng);
-      const flow = rng() > 0.35 ? 'import' : 'export';
-      const partner = pickRandom(PARTNERS.filter((x) => x !== c.iso2), rng);
-      const quantity = 5 + Math.floor(rng() * 480);
-      const unitPrice = 1500 + Math.floor(rng() * 45000);
-      const value = quantity * unitPrice;
-      out.push({
-        id: `${c.iso2}-${p.cat}-${flow}-${periodStr}-${i}`,
-        country: c.iso2,
-        countryName: c.name,
-        region: c.region,
-        hsCode: p.hs,
-        productCategory: p.cat,
-        productName: { zh: p.zh, en: p.en },
-        flow,
-        value,
-        quantity,
-        unitName: p.cat === 'lab-equipment' ? 'set' : 'unit',
-        partner,
-        period: periodStr,
-      });
+    const geo = GEO[c.iso2] ?? {
+      cities: [[c.name.zh, c.name.en]],
+      ports: [[`${c.name.zh}关区`, `${c.name.en} Customs`]],
+    };
+
+    for (let m = 0; m < TRADE_MONTHS; m++) {
+      const period = monthString(m);
+      // 4-7 records per country per month → ~6 months × 39 countries × ~5.5 ≈ 1300
+      const n = 4 + Math.floor(rng() * 4);
+
+      for (let i = 0; i < n; i++) {
+        const product = pickRandom(PRODUCTS, rng);
+        const siteType = pickRandom(product.sites, rng);
+        const [cityZh, cityEn] = pickRandom(geo.cities, rng);
+        const [portZh, portEn] = pickRandom(geo.ports, rng);
+        const partner = pickRandom(PARTNERS.filter((x) => x.iso2 !== c.iso2), rng);
+
+        // Imports dominate for monitoring equipment in these regions.
+        const flow = rng() > 0.3 ? 'import' : 'export';
+
+        const suffix = SITE_NAME_SUFFIX[siteType];
+        const seq = 1 + Math.floor(rng() * 9);
+        const quantity = 2 + Math.floor(rng() * 320);
+        const unitPrice = 1200 + Math.floor(rng() * 52000);
+        const value = quantity * unitPrice;
+
+        out.push({
+          id: `${c.iso2}-${period}-${product.cat}-${flow}-${i}`,
+          country: c.iso2,
+          countryName: c.name,
+          region: c.region,
+          hsCode: product.hs,
+          productCategory: product.cat,
+          productName: { zh: product.zh, en: product.en },
+          flow,
+          value,
+          quantity,
+          unitName: product.cat === 'lab-equipment' ? 'set' : 'unit',
+          partner: partner.iso2,
+          partnerName: partner.name,
+          siteType,
+          siteName: `${cityZh}${suffix.zh} #${seq} / ${cityEn} ${suffix.en} #${seq}`,
+          customsPort: `${portZh} / ${portEn}`,
+          period,
+        });
+      }
     }
   }
   return out;

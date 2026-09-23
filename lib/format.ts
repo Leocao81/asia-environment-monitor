@@ -1,4 +1,4 @@
-import type { PolicyCategory, ProductCategory, TradeFlow } from './types';
+import type { PolicyCategory, ProductCategory, SiteType, TradeFlow } from './types';
 
 export const POLICY_CATEGORY_LABEL: Record<PolicyCategory, { zh: string; en: string }> = {
   air: { zh: '大气', en: 'Air' },
@@ -24,6 +24,18 @@ export const PRODUCT_CATEGORY_LABEL: Record<ProductCategory, { zh: string; en: s
 export const TRADE_FLOW_LABEL: Record<TradeFlow, { zh: string; en: string }> = {
   import: { zh: '进口', en: 'Import' },
   export: { zh: '出口', en: 'Export' },
+};
+
+export const SITE_TYPE_LABEL: Record<SiteType, { zh: string; en: string }> = {
+  'urban-air-station': { zh: '城市空气站', en: 'Urban air station' },
+  'industrial-park': { zh: '工业园区/厂界', en: 'Industrial park' },
+  'watershed-section': { zh: '流域断面', en: 'Watershed section' },
+  'drinking-water-source': { zh: '饮用水源地', en: 'Drinking-water source' },
+  'soil-site': { zh: '土壤监测点', en: 'Soil site' },
+  'noise-site': { zh: '声环境点位', en: 'Noise site' },
+  'port-customs': { zh: '港口/口岸', en: 'Port / customs' },
+  'vehicle-emission': { zh: '机动车尾气站', en: 'Vehicle emission station' },
+  laboratory: { zh: '实验室/检测机构', en: 'Laboratory' },
 };
 
 const usdFormatter = new Intl.NumberFormat('en-US', {

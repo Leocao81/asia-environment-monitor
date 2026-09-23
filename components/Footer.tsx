@@ -23,8 +23,9 @@ export function Footer() {
         </div>
 
         <div>
-          <h3 className="text-xs font-semibold uppercase tracking-wider text-ink-500">项目</h3>
+          <h3 className="text-xs font-semibold uppercase tracking-wider text-ink-500">数据</h3>
           <ul className="mt-3 space-y-1.5 text-sm">
+            <li><a href="/trade" className="hover:underline">监测设备进出口（可筛选导出）</a></li>
             <li><a href="/about" className="hover:underline">关于与数据来源</a></li>
             <li><a href="/about#methodology" className="hover:underline">采集方法</a></li>
             <li><a href="/about#license" className="hover:underline">许可与免责</a></li>
@@ -32,7 +33,7 @@ export function Footer() {
         </div>
 
         <div>
-          <h3 className="text-xs font-semibold uppercase tracking-wider text-ink-500">订阅</h3>
+          <h3 className="text-xs font-semibold uppercase tracking-wider text-ink-500">更新</h3>
           <p className="mt-3 text-xs text-ink-500">
             每天 UTC 02:00 由 GitHub Actions 自动抓取并重建页面。
           </p>

@@ -50,6 +50,21 @@ export type ProductCategory =
   | 'emissions-control'
   | 'waste-treatment';
 
+/**
+ * 监测点位 / 应用场景 —— 设备最终部署的场景类型。
+ * 用于回答"这批设备进了哪些类型的点位"。
+ */
+export type SiteType =
+  | 'urban-air-station'      // 城市环境空气自动监测站
+  | 'industrial-park'        // 工业园区 / 厂界
+  | 'watershed-section'      // 流域断面 / 地表水
+  | 'drinking-water-source'  // 饮用水水源地
+  | 'soil-site'              // 土壤 / 农田监测点
+  | 'noise-site'             // 声环境功能区 / 交通噪声点
+  | 'port-customs'           // 港口 / 口岸监测点
+  | 'vehicle-emission'       // 机动车尾气检测站
+  | 'laboratory';            // 实验室 / 检测机构
+
 export type TradeRecord = {
   id: string;
   /** Reporter country, ISO 3166-1 alpha-2 */
@@ -65,7 +80,16 @@ export type TradeRecord = {
   value: number;
   quantity: number;
   unitName: string;
+  /** Partner country ISO code, e.g. "CN" */
   partner: string;
+  /** Partner country localized name */
+  partnerName: LocalizedText;
+  /** 监测点位 / 应用场景类型 */
+  siteType: SiteType;
+  /** 具体点位名称，例如 "Almaty Air Quality Station #3" */
+  siteName: string;
+  /** 报关口岸 / 关区（可选，进出口实际发生地） */
+  customsPort: string;
   /** Year-month, e.g. "2026-07" */
   period: string;
 };

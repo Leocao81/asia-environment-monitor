@@ -23,6 +23,9 @@ export function Header() {
               {r.name.zh}
             </Link>
           ))}
+          <Link href="/trade" className="rounded-md px-3 py-1.5 text-sm font-medium text-ink-700 hover:bg-ink-100 focus-ring">
+            贸易数据
+          </Link>
           <Link href="/about" className="rounded-md px-3 py-1.5 text-sm font-medium text-ink-700 hover:bg-ink-100 focus-ring">
             关于
           </Link>
@@ -36,13 +39,18 @@ export function Header() {
           >
             GitHub
           </a>
-          <Link href="/" className="btn-primary text-xs">订阅</Link>
+          <Link href="/trade" className="btn-primary text-xs">导出数据</Link>
         </div>
       </div>
 
-      {/* Mobile region nav */}
+      {/* Mobile nav */}
       <nav aria-label="区域导航（移动）" className="md:hidden border-t border-ink-200/70 bg-white">
         <ul className="container-page flex gap-1 overflow-x-auto py-2 text-sm">
+          <li>
+            <Link href="/trade" className="whitespace-nowrap rounded-md bg-emerald-50 px-3 py-1.5 font-medium text-emerald-700 focus-ring">
+              贸易数据
+            </Link>
+          </li>
           {REGIONS.map((r) => (
             <li key={r.id}>
               <Link href={`/regions/${r.id}`} className="whitespace-nowrap rounded-md px-3 py-1.5 text-ink-700 hover:bg-ink-100 focus-ring">
@@ -50,6 +58,11 @@ export function Header() {
               </Link>
             </li>
           ))}
+          <li>
+            <Link href="/about" className="whitespace-nowrap rounded-md px-3 py-1.5 text-ink-700 hover:bg-ink-100 focus-ring">
+              关于
+            </Link>
+          </li>
         </ul>
       </nav>
     </header>

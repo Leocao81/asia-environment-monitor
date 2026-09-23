@@ -34,6 +34,10 @@ export default function HomePage() {
   const importValue = snapshot.trade.filter((t) => t.flow === 'import').reduce((s, t) => s + t.value, 0);
   const exportValue = snapshot.trade.filter((t) => t.flow === 'export').reduce((s, t) => s + t.value, 0);
 
+  // Trade explorer highlights
+  const siteTypesN = new Set(snapshot.trade.map((t) => t.siteType)).size;
+  const uniqueSites = new Set(snapshot.trade.map((t) => t.siteName)).size;
+
   // Show top 6 most-recent policies across all regions
   const latestPolicies = [...snapshot.policies]
     .sort((a, b) => (a.publishedAt < b.publishedAt ? 1 : -1))
@@ -103,6 +107,31 @@ export default function HomePage() {
               countryCount={s.countryCount}
             />
           ))}
+        </div>
+      </section>
+
+      {/* Trade explorer CTA */}
+      <section className="container-page">
+        <div className="card bg-gradient-to-br from-emerald-50 via-white to-sky-50">
+          <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+            <div className="max-w-2xl">
+              <h2 className="text-xl font-semibold sm:text-2xl">监测设备进出口数据</h2>
+              <p className="mt-2 text-sm leading-relaxed text-ink-700">
+                共 <strong>{totalTrade.toLocaleString()}</strong> 条记录、覆盖 {COUNTRIES.length} 个国家、
+                <strong>{siteTypesN}</strong> 类监测点位。支持按
+                <strong>点位</strong>、<strong>设备类型</strong>、<strong>国家</strong>、<strong>时间</strong>、
+                <strong>流向</strong>、<strong>贸易伙伴</strong>多维筛选，并可导出 Excel。
+              </p>
+              <div className="mt-4 flex flex-wrap gap-2">
+                <Link href="/trade" className="btn-primary">打开筛选项与导出</Link>
+                <Link href="/regions/southeast-asia" className="btn-secondary">从区域进入</Link>
+              </div>
+            </div>
+            <dl className="grid grid-cols-2 gap-3 lg:w-[340px]">
+              <StatCard label="进出口总额" value={formatUSD(totalValue)} accent="emerald" />
+              <StatCard label="监测点位" value={`${siteTypesN} 类`} hint={`${uniqueSites} 个具体点位`} accent="sky" />
+            </dl>
+          </div>
         </div>
       </section>
 

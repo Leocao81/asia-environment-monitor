@@ -13,11 +13,11 @@
 - [3. 部署到 Vercel（在线版）](#3-部署到-vercel在线版)
 - [4. 配置每日自动更新](#4-配置每日自动更新)
 - [5. 打开你的网站](#5-打开你的网站)
-- [6. 进阶：本地开发](#6-进阶本地开发)
-- [7. 进阶：接入真实数据源](#7-进阶接入真实数据源)
-- [8. 进阶：绑定自己的域名](#8-进阶绑定自己的域名)
-- [9. 常见问题 FAQ](#9-常见问题-faq)
-- [10. 项目结构说明](#10-项目结构说明)
+- [7. 进阶：本地开发](#7-进阶本地开发)
+- [8. 进阶：接入真实数据源](#8-进阶接入真实数据源)
+- [9. 进阶：绑定自己的域名](#9-进阶绑定自己的域名)
+- [10. 常见问题 FAQ](#10-常见问题-faq)
+- [11. 项目结构说明](#11-项目结构说明)
 
 ---
 
@@ -218,11 +218,172 @@ https://asia-environment-monitor-xxxxxx.vercel.app
 | `/countries/kz` | 哈萨克斯坦 |
 | `/countries/cn`（如果加上）或任意国家 | 国家详情 |
 | `/about` | 关于 + 数据来源 |
+| `/trade` | **完整贸易数据 + 多维筛选 + 导出 Excel** |
 | `/sitemap.xml` | SEO 站点地图 |
 
 ---
 
-## 6. 进阶：本地开发
+## 6. 更新网站的方法和步骤
+
+> 这一节**最常用**。网站部署完成后，90% 的需求都是"想更新点内容 / 加点数据 / 改个样式"，都属于这一节。
+
+### 6.1 三种更新方式速查
+
+| 想做的事 | 走这条路线 | 耗时 |
+| --- | --- | --- |
+| **刷新数据**（让进出口记录、政策滚动到最新一天） | A. 自动等明天 / B. 手动触发 Actions | 30 秒 ~ 2 分钟 |
+| **改文字、改样式、加国家、调字段** | C. 本地改代码 → git push → Vercel 自动部署 | 5 ~ 30 分钟 |
+| **接入真实 RSS / 海关 API** | D. 改爬虫脚本 → git push → 第二天生效 | 30 ~ 60 分钟 |
+
+---
+
+### 路线 A：什么都不做，自动等明天
+
+每天 **UTC 02:00（北京 10:00）** GitHub Actions 会自动：
+
+1. 跑 `scripts/scrape-policies.mjs` 抓政策
+2. 跑 `scripts/scrape-trade.mjs` 抓贸易数据
+3. 生成 `data/snapshot.json`
+4. 自动 commit 到 main 分支
+5. Vercel 检测到新 commit → 重新构建 → 1-2 分钟后新数据上线
+
+✅ **最省事**，但要等 24 小时。
+
+---
+
+### 路线 B：手动立刻刷新数据（推荐）
+
+> 跳过 24 小时等待，立刻触发数据更新。
+
+**第 1 步**：打开你的 GitHub 仓库 → 顶部 **Actions** 标签
+**第 2 步**：左侧选 **Daily Update**
+**第 3 步**：右侧点 **Run workflow** → 弹窗里再点绿色 **Run workflow**
+**第 4 步**：等待 1-2 分钟，状态从 黄圈 ⏳ → 绿勾 ✅
+**第 5 步**：回到仓库 Code 标签，会多一条 commit：`chore(data): daily snapshot YYYY-MM-DD`
+**第 6 步**：打开 Vercel Deployments，会自动出现一次新构建，等 🎉 "Ready"
+**第 7 步**：刷新网站，顶部"最近一次更新时间"应该变成刚才
+
+> 💡 **这条最适合**：今天想看到数据有变化，但又不想改代码。
+
+---
+
+### 路线 C：改网站内容（页面/样式/文案/字段）
+
+> 想改页面、改颜色、加新国家、改字段——都在这条路线里。
+
+#### C1. 想改页面文字 / 文案 / 样式
+
+直接在编辑器里改对应文件：
+
+| 想改的内容 | 改哪个文件 |
+| --- | --- |
+| 首页 Hero 文案 | `app/page.tsx` |
+| 区域页文案 | `app/regions/[id]/page.tsx` |
+| 国家页文案 | `app/countries/[code]/page.tsx` |
+| 关于页 | `app/about/page.tsx` |
+| 全站颜色 / 主题 | `tailwind.config.ts` + `app/globals.css` |
+| 顶部导航 | `components/Header.tsx` |
+| 底部 Footer | `components/Footer.tsx` |
+| 表格列 / 筛选项 | `components/TradeExplorer.tsx` |
+| 中文文案 | 各组件文件里的中文字符串 |
+
+改完之后：
+
+```bash
+cd "C:\Users\lifen\WorkBuddy\2026-09-21-15-12-07"
+
+# 看改了什么
+git status
+
+# 把改动加入暂存区
+git add .
+
+# 提交（-m 后面写一句人话描述改了什么）
+git commit -m "改: 把首页标题换成 X"
+
+# 推到 GitHub → Vercel 自动检测 → 自动部署
+git push
+```
+
+> **第一次 push 之后**：Vercel 会自动构建并部署，1-2 分钟后访问网站就能看到改动。
+
+#### C2. 想加一个国家 / 加新区域
+
+打开 `lib/countries.ts`，找到 `COUNTRIES` 数组，按下面格式加一行：
+
+```ts
+{
+  iso2: 'XX',         // ISO 3166-1 alpha-2（2字母）
+  iso3: 'XXX',        // ISO 3166-1 alpha-3（3字母）
+  name: { zh: '新国家', en: 'New Country' },
+  capital: { zh: '首都', en: 'Capital' },
+  region: 'central-asia',  // 4选1: central-asia / southeast-asia / south-asia / middle-east
+  currency: 'XXX',
+},
+```
+
+然后 `git push`，Vercel 会自动构建。`/countries/xx` 页面会自动出现。
+
+#### C3. 想加 / 改贸易字段（比如"海关编码"）
+
+三处需要同步修改：
+
+1. `lib/types.ts`：`TradeRecord` 类型加字段
+2. `scripts/seed-data.mjs`：种子数据生成器产出新字段
+3. `components/TradeExplorer.tsx`：表格和 CSV 导出里加一列
+
+#### C4. 想换主色调 / Logo
+
+- **颜色**：改 `tailwind.config.ts` 里的 `colors` 段
+- **Logo**：替换 `public/` 下的 SVG 文件，文件名不变
+
+改完都是同一条收尾：
+
+```bash
+git add . && git commit -m "改: 调整主题色" && git push
+```
+
+---
+
+### 路线 D：接入真实数据源（让数据不再是种子）
+
+> 当前用的是确定性种子数据（看起来"挺像真的"）。要接真数据：
+
+#### D1. 接 RSS 政策源
+
+编辑 `scripts/scrape-policies.mjs`，把 `SOURCES` 数组替换成真实 RSS 地址：
+
+```js
+const SOURCES = [
+  { url: 'https://moefcc.gov.in/rss.xml', country: 'IN', region: 'south-asia', name: { zh: '印度环境部', en: 'India MoEFCC' } },
+  // ...按需添加
+];
+```
+
+#### D2. 接 UN Comtrade 真实海关数据
+
+1. 去 <https://comtradeplus.un.org/> 申请免费 API key
+2. 在 GitHub 仓库 **Settings → Secrets → Actions** 加 2 个 Secret：
+   - `COMTRADE_API_KEY`：你的 key
+   - `COMTRADE_API_URL`：例如 `https://comtradeapi.un.org/data/v1/get/C/A/HS`
+3. 改写 `scripts/scrape-trade.mjs`，把 `fetchRecords()` 替换成 Comtrade HTTP 调用
+4. `git push`，第二天自动跑
+
+---
+
+### 6.2 出错了怎么办？
+
+| 现象 | 原因 | 处理 |
+| --- | --- | --- |
+| Vercel 构建红 ❌ | 代码语法错 | 看 Vercel Deployments → 选失败那条 → 看日志最后 30 行 |
+| Actions 任务红 ❌ | 爬虫脚本报错 | GitHub Actions → 选失败任务 → 点 "scrape-trade" step → 看日志 |
+| 网站还是旧的 | Vercel 还没构建完 | 等 1-2 分钟；或刷新浏览器（Ctrl+F5 强制清缓存） |
+| 表格里没数据 | 筛选条件太严 | 点 "重置筛选" 按钮，或到 `/trade` 全量页 |
+| Excel 导出乱码 | Excel 老版本问题 | 双击 CSV 后选"以 UTF-8 重新编码"即可；或用 WPS / 微软 365 打开 |
+
+---
+
+## 7. 进阶：本地开发
 
 > 这一节是**给开发者**的。如果你只想用网站，不需要做这一步。
 
@@ -282,7 +443,7 @@ npm start       # 跑生产 build
 
 ---
 
-## 7. 进阶：接入真实数据源
+## 8. 进阶：接入真实数据源
 
 > 当前默认用的是确定性种子数据。要替换为真实数据，只需修改两个爬虫脚本。
 
@@ -321,7 +482,7 @@ async function fetchComtrade() {
 
 ---
 
-## 8. 进阶：绑定自己的域名
+## 9. 进阶：绑定自己的域名
 
 > Vercel 提供免费 `*.vercel.app` 域名。如果你想用 `yourdomain.com`，按以下操作。
 
@@ -348,7 +509,7 @@ async function fetchComtrade() {
 
 ---
 
-## 9. 常见问题 FAQ
+## 10. 常见问题 FAQ
 
 ### Q1：部署后页面显示"暂无数据"怎么办？
 
@@ -431,7 +592,7 @@ Vercel Dashboard → Settings → General → 滚到底 → **Delete Project**�
 
 ---
 
-## 10. 项目结构说明
+## 11. 项目结构说明
 
 ```
 .
@@ -440,6 +601,7 @@ Vercel Dashboard → Settings → General → 滚到底 → **Delete Project**�
 │   ├── page.tsx                   ← 首页（Hero + 4 区域概览 + KPI）
 │   ├── globals.css                ← Tailwind 入口
 │   ├── about/page.tsx             ← 关于页
+│   ├── trade/page.tsx             ← 全量贸易数据 + 多维筛选
 │   ├── regions/[id]/page.tsx      ← 区域动态路由（4 个）
 │   ├── countries/[code]/page.tsx  ← 国家动态路由（39 个）
 │   ├── sitemap.ts                 ← 自动生成 sitemap.xml
@@ -453,14 +615,16 @@ Vercel Dashboard → Settings → General → 滚到底 → **Delete Project**�
 │   ├── StatCard.tsx               ← KPI 数字卡
 │   ├── CountryGrid.tsx            ← 国家网格
 │   ├── PolicyList.tsx             ← 政策列表
-│   ├── TradeTable.tsx             ← 贸易表格（横向滚动）
+│   ├── MultiSelect.tsx            ← 多选筛选器（带搜索）
+│   ├── TradeExplorer.tsx          ← **贸易筛选 + 分页 + CSV 导出（核心交互）**
 │   └── TradeSummaryByCategory.tsx ← 按产品类别汇总
 │
 ├── lib/                           ← 业务库
 │   ├── types.ts                   ← TypeScript 类型定义
 │   ├── countries.ts               ← 39 国家 + 4 区域元数据
 │   ├── data.ts                    ← 读 snapshot.json
-│   └── format.ts                  ← 货币 / 日期格式化
+│   ├── format.ts                  ← 货币 / 日期 / 类别中文标签
+│   └── site.ts                    ← 站点 URL 解析（兼容空环境变量）
 │
 ├── data/
 │   └── snapshot.json              ← 爬虫输出的最新数据快照（提交到 Git）

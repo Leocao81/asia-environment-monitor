@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { REGIONS, getRegion, countriesByRegion } from '@/lib/countries';
 import { readSnapshot, policiesForRegion, tradeForRegion } from '@/lib/data';
 import { PolicyList } from '@/components/PolicyList';
-import { TradeTable } from '@/components/TradeTable';
+import { TradeExplorer } from '@/components/TradeExplorer';
 import { CountryGrid } from '@/components/CountryGrid';
 import { LastUpdated } from '@/components/LastUpdated';
 import { StatCard } from '@/components/StatCard';
@@ -113,8 +113,12 @@ export default function RegionPage({ params }: { params: { id: string } }) {
       <section className="container-page">
         <div className="grid gap-4 lg:grid-cols-[1fr_320px]">
           <div>
-            <h2 className="mb-3 text-lg font-semibold">监测设备进出口</h2>
-            <TradeTable records={trade} emptyText="该区域暂未抓到贸易数据" />
+            <TradeExplorer
+              records={trade}
+              showRegionFilter={false}
+              showCountryFilter
+              heading={`${region.name.zh}监测设备进出口`}
+            />
           </div>
           <TradeSummaryByCategory records={trade} />
         </div>
